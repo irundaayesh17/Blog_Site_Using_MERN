@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft,  faChevronRight, faPlus, faHome, faUser, faSignInAlt, faUserPlus, faCog, faSignOutAlt, faBook, faBookOpen, faBookAtlas, faBookDead, faBookBible} from '@fortawesome/free-solid-svg-icons'
+import {Link} from 'react-router-dom'
 
 export default function Header() {
 
   const [open, setopen] = useState(true)
   const Menu = [
     {title: "Create", icon: faPlus},
-    {title: "Home", icon: faHome},
+    {title: "Home", icon: faHome, link: '/'},
     {title: "Profile", icon: faUser, gap: true},
-    {title: "Login", icon: faSignInAlt},
-    {title: "Register", icon: faUserPlus},
+    {title: "Login", icon: faSignInAlt, link: '/login'},
+    {title: "Register", icon: faUserPlus, link: '/register'},
     {title: "Settings", icon: faCog},
     {title: "Logout", icon: faSignOutAlt},
   ];
@@ -26,8 +27,10 @@ export default function Header() {
         <ul className='pt-6'>
           {Menu.map((menu, index) => (
             <li key={index} className={`flex text-white font-semibold items-center pt-8 ml-7 cursor-pointer text-xl min-h-[60px] hover:text-2xl duration-[50ms]`}>
-              <FontAwesomeIcon icon={menu.icon} className=' '/>
-              <h1 className={` ml-7 ${!open && "hidden"} origin-left duration-200`}>{menu.title}</h1>
+              <Link to={menu.link || '#'} className='flex items-center w-full'>
+                <FontAwesomeIcon icon={menu.icon} className=' ' />
+                <span className={`ml-7 ${!open && "hidden"} origin-left duration-200`}>{menu.title}</span>
+              </Link>
             </li>
           ))}
         </ul>
