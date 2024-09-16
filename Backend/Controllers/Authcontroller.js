@@ -1,7 +1,7 @@
 import User from '../Models/Usermodels.js';
 import bcrypt from 'bcryptjs';
 import generateVerificationAndSetCookies from '../Utils/GenerateVerificationAndSetCookies.js';
-import sendVerificationEmail from '../Mailtrap/emails.js';
+import { sendVerificationEmail, sendWelcomeEmail } from '../Mailtrap/emails.js';
 
 
 export const signup = async (req, res) => {
@@ -50,6 +50,43 @@ export const signup = async (req, res) => {
         if (!res.headersSent) {
             res.status(500).json({ error: "Server error" });
         }    }
+}
+
+export const verifyEmail = async (req, res) => {
+    const {code} = req.body;
+    try{
+        const user = await User.findOne({
+            vertificationToken: code,
+            vertificationExpire: { $gt: Date.now() },
+        });
+        if (!user) {
+            return res.status(400).json({ error: "Invalid or expired Verification Code" });
+        }
+        user.isVerified = true;
+        user.vertificationToken = undefined;
+        user.vertificationExpire = undefined;
+        await user.save();
+
+        await sendWelcomeEmail(user.email, user.firstname);
+        res.status(200).json({
+            success: true,
+            message: "Email Verified Successfully",
+            user : {
+                email: user.email,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                lastlogin: user.lastlogin,
+                password: undefined,
+                vertificationToken: undefined,
+            },
+        });
+    }
+    catch(error){
+        console.log(error);
+        if (!res.headersSent) {
+            res.status(500).json({ error: "Server error" });
+        }
+    }
 }
 
 export const signin = (req, res) => {
