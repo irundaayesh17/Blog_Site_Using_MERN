@@ -1,6 +1,7 @@
 import User from '../Models/Usermodels.js';
 import bcrypt from 'bcryptjs';
 import generateVerificationAndSetCookies from '../Utils/GenerateVerificationAndSetCookies.js';
+import sendVerificationEmail from '../Mailtrap/emails.js';
 
 
 export const signup = async (req, res) => {
@@ -29,6 +30,7 @@ export const signup = async (req, res) => {
         await user.save();
 
         generateVerificationAndSetCookies(res,user._id);
+        await sendVerificationEmail(user.email, vertificationToken);
         res.status(201).json({
             message: "User Registered Successfully",
             user:{
