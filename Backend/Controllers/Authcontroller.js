@@ -1,9 +1,10 @@
-import User from '../Models/Usermodels.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import generateVerificationAndSetCookies from '../Utils/GenerateVerificationAndSetCookies.js';
+import jwt from 'jsonwebtoken';
+import { generateVerificationAndSetCookies } from '../Utils/GenerateVerificationAndSetCookies.js';
 import { sendVerificationEmail, sendWelcomeEmail, sendResetPasswordEmail, sendResetSuccessEmail} from '../Mailtrap/emails.js';
 import { send } from 'process';
+import User from '../Models/Usermodels.js';
 
 export const signup = async (req, res) => {
     const { email, password, firstname, lastname } = req.body;
@@ -189,22 +190,15 @@ export const resetPassword = async (req, res) => {
 }
 
 export const checkAuth = async (req, res) => {
-    try{
-        const user = await User.findById(req.userid).select("-password");
-        if(!user){
-            return res.status(400).json({error: "User not found"});
-        }
-        res.status(200).json({
-            success: true,
-            message: "User Found",
-            user: user,
-        });
-            
-    }
-    catch(error){
-        console.log(error);
-        if (!res.headersSent) {
-            res.status(500).json({ error: "Server error" });
-        }
-    }
+    try {
+		const user = await User.findById(req.userId).select("-password");
+		if (!user) {
+			return res.status(400).json({ success: false, message: "User not found" });
+		}
+
+		res.status(200).json({ success: true, user });
+	} catch (error) {
+		console.log("Error in checkAuth ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
 }
