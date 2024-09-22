@@ -12,7 +12,7 @@ import { Navigate } from 'react-router-dom';
 import CreateBlog from './Pages/CreateBlog';
 import { useAuthStore } from './Store/authStore';
 import LoadingSpinner from './Components/LoadingSpinner';
-
+import Profile from './Pages/Profile';
 //redirect authenticated users to home page
 const RedirectAuthenticated = ({children}) => {
   const {isAuthenticated, user} = useAuthStore()
@@ -56,6 +56,7 @@ function App() {
             <Route path='/register' element={<RedirectAuthenticated> <Register/> </RedirectAuthenticated>}/>
             <Route path='/verify-email' element={<VerifyEmail/>}/>
             <Route path='/create' element={<ProtectedRoute> <CreateBlog/> </ProtectedRoute>}/>
+            <Route path='/profile' element={<ProtectedRoute> <Profile/> </ProtectedRoute>}/>
             {/* Add more routes here as needed */}
           </Routes>
           <Toaster />

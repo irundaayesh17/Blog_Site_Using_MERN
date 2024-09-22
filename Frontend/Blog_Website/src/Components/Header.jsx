@@ -1,12 +1,19 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft,  faChevronRight, faPlus, faHome, faUser, faSignInAlt, faUserPlus, faCog, faSignOutAlt, faBook, faBookOpen, faBookAtlas, faBookDead, faBookBible} from '@fortawesome/free-solid-svg-icons'
-import {Link} from 'react-router-dom'
 import { useAuthStore } from '../Store/authStore.js';
+import { useNavigate } from 'react-router-dom';
 export default function Header() {
 
   const [open, setopen] = useState(true)
-  const {isAuthenticated} = useAuthStore();
+  const {isAuthenticated, logout} = useAuthStore();
+  const navigate = useNavigate();
+
+  
+  const handleLogout = async() => {
+    logout();
+  }
+
   const Menu = [
     {title: "Create", icon: faPlus, link: '/create', authRequired: false},
     {title: "Home", icon: faHome, link: '/', authRequired: false},
@@ -14,7 +21,7 @@ export default function Header() {
     {title: "Login", icon: faSignInAlt, link: '/login', authRequired: false},
     {title: "Register", icon: faUserPlus, link: '/register', authRequired: false},
     {title: "Settings", icon: faCog, authRequired: false},
-    {title: "Logout", icon: faSignOutAlt, authRequired: true},
+    {title: "Logout", icon: faSignOutAlt, authRequired: true, onClick: handleLogout},
   ];
 
   return (
@@ -33,10 +40,10 @@ export default function Header() {
 
             return (
               <li key={index} className={`flex text-white font-semibold items-center pt-8 ml-7 cursor-pointer text-xl min-h-[60px] hover:text-2xl duration-[50ms]`}>
-                <Link to={menuItem.link || '#'} className='flex items-center w-full'>
+                <div onClick={menuItem.onClick ? menuItem.onClick : () => navigate(menuItem.link || '#')} className='flex items-center w-full'>
                   <FontAwesomeIcon icon={menuItem.icon} className=' ' />
-                  <span className={`ml-7 ${!open && "hidden"} origin-left duration-200`}>{menuItem.title}</span>
-                </Link>
+                  <span className={`ml-7 ${!open && 'hidden'} origin-left duration-200`}>{menuItem.title}</span>
+                </div>
               </li>
             );
           })}
